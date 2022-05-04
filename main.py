@@ -1,28 +1,49 @@
 from tkinter import *
+from tkinter import ttk
 import win32com.client
- 
-class Table:
-    def __init__(self,root):
-        # code for creating table
-        for i in range(total_rows):
-            val=0
-            for j in range(total_columns+1):
-                val+=1
-                if j==total_columns:
-                    self.e=Button(root, text ="Properties", command = getProp)
-                    self.e.grid(row=i, column=j)
-                else:
-                    self.e = Label(root,width=15*val,fg='black',font=('Arial',16,'bold'), text=lst[i][j])
-                    self.e.grid(row=i, column=j)
-def getProp(desc):
-    print(desc)
 
-lst=[]
-root = Tk()
+def myfunction(event):
+    canvas.configure(scrollregion=canvas.bbox("all"))
+
+root=Tk()
+# Set the size of the window
+root.geometry("700x350")
+lst = []
 wmi = win32com.client.GetObject ("winmgmts:")
+props = [ 'Availability', 'Caption', 'ClassCode', 'ConfigManagerErrorCode', 'ConfigManagerUserConfig', 'CreationClassName', 'CurrentAlternateSettings', 'CurrentConfigValue', 'Description', 'DeviceID', 'ErrorCleared', 'ErrorDescription', 'GangSwitched', 'InstallDate', 'LastErrorCode', 'Name', 'NumberOfConfigs', 'NumberOfPorts', 'PNPDeviceID', 'PowerManagementCapabilities', 'PowerManagementSupported', 'ProtocolCode',  'Status', 'StatusInfo', 'SubclassCode', 'SystemCreationClassName', 'SystemName', 'USBVersion']
 for i, usb in enumerate(wmi.InstancesOf("Win32_USBHub")):
-    lst.append((i+1,usb.name,usb.DeviceID))
-total_rows = len(lst)
-total_columns = len(lst[0])
-t = Table(root)
+    lst.append((i+1,usb.name,usb))
+options=[i[1] for i in lst]
+# Function to print the index of selected option in Combobox
+def callback(*arg):
+    for i in frame.winfo_children():
+        i.destroy()
+    current = lst[cb.current()][2]
+    for i,e in enumerate(props):
+        print("{}: {}".format(e, eval("current.{}".format(e))))
+        Label(frame, text=e).grid(row=i, column=1)
+        Label(frame, text="{}".format(eval("current.{}".format(e)))).grid(row=i,column=2)
+# Create a combobox widget
+var= StringVar()
+cb= ttk.Combobox(root, textvariable= var)
+cb['values']= options
+cb['state']= 'readonly'
+cb.pack(fill='x',padx= 5, pady=5)
+
+# Set the tracing for the given variable
+var.trace('w', callback)
+
+myframe=Frame(root,relief=GROOVE)
+myframe.pack(fill='x')
+
+canvas=Canvas(myframe, bg="white", height=1000, width=1000)
+frame=Frame(canvas)
+myscrollbar=Scrollbar(myframe,orient="vertical",command=canvas.yview)
+canvas.configure(yscrollcommand=myscrollbar.set)
+
+myscrollbar.pack(side="right",fill="y")
+canvas.pack(fill='x',side="left")
+canvas.create_window((0,0),window=frame,anchor='nw')
+frame.bind("<Configure>",myfunction)
+
 root.mainloop()

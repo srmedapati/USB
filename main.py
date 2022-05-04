@@ -9,14 +9,12 @@ class Table:
             for j in range(total_columns+1):
                 val+=1
                 if j==total_columns:
-                    self.e=Button(root, text ="Properties", command = getProp(lst[j-1]))
+                    self.e=Button(root, text ="Properties", command = getProp)
                     self.e.grid(row=i, column=j)
                 else:
-                    self.e = Entry(root,width=15*val,fg='black',font=('Arial',16,'bold'))
+                    self.e = Label(root,width=15*val,fg='black',font=('Arial',16,'bold'), text=lst[i][j])
                     self.e.grid(row=i, column=j)
-                    self.e.insert(END, lst[i][j])
 def getProp(desc):
-    sub_win=Tk()
     print(desc)
 
 lst=[]

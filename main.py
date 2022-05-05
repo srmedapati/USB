@@ -6,6 +6,7 @@ def myfunction(event):
     canvas.configure(scrollregion=canvas.bbox("all"))
 
 root=Tk()
+root.title('Removable Devices')
 # Set the size of the window
 root.geometry("700x350")
 lst = []

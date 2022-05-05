@@ -10,17 +10,19 @@ root=Tk()
 root.geometry("700x350")
 lst = []
 wmi = win32com.client.GetObject ("winmgmts:")
-props = [ 'Availability', 'Caption', 'ClassCode', 'ConfigManagerErrorCode', 'ConfigManagerUserConfig', 'CreationClassName', 'CurrentAlternateSettings', 'CurrentConfigValue', 'Description', 'DeviceID', 'ErrorCleared', 'ErrorDescription', 'GangSwitched', 'InstallDate', 'LastErrorCode', 'Name', 'NumberOfConfigs', 'NumberOfPorts', 'PNPDeviceID', 'PowerManagementCapabilities', 'PowerManagementSupported', 'ProtocolCode',  'Status', 'StatusInfo', 'SubclassCode', 'SystemCreationClassName', 'SystemName', 'USBVersion']
-for i, usb in enumerate(wmi.InstancesOf("Win32_USBHub")):
-    lst.append((i+1,usb.name,usb))
-options=[i[1] for i in lst]
+props = ['Access', 'Availability', 'BlockSize', 'Caption','CreationClassName','Description', 'DeviceID', 'DriveType', 'ErrorCleared', 'ErrorDescription', 'ErrorMethodology', 'FileSystem', 'FreeSpace','MaximumComponentLength', 'MediaType','Name','NumberOfBlocks', 'PNPDeviceID', 'Path_','Size','Status','SystemCreationClassName', 'SystemName', 'VolumeDirty', 'VolumeName', 'VolumeSerialNumber']
+for i, usb in enumerate(wmi.InstancesOf("Win32_LogicalDisk")):
+    if usb.drivetype==2:
+        lst.append(usb)
+
+options=["["+i.name[0]+"]:"+i.VolumeName for i in lst]
 # Function to print the index of selected option in Combobox
 def callback(*arg):
     for i in frame.winfo_children():
         i.destroy()
-    current = lst[cb.current()][2]
+    current = lst[cb.current()]
     for i,e in enumerate(props):
-        print("{}: {}".format(e, eval("current.{}".format(e))))
+        # print("{}: {}".format(e, eval("current.{}".format(e))))
         Label(frame, text=e).grid(row=i, column=1)
         Label(frame, text="{}".format(eval("current.{}".format(e)))).grid(row=i,column=2)
 # Create a combobox widget
